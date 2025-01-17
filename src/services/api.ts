@@ -33,7 +33,15 @@ export interface PaginationResponse<T> {
 }
 
 export const fetchUsers = async (): Promise<PaginationResponse<User>> => {
-  const response = await fetch(`${API_HOST}/api/v1/users?page=1&per_page=10`);
+  const response = await fetch(`${API_HOST}/api/v1/users?page=1&per_page=10`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true'
+    },
+  });
+  
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
@@ -46,8 +54,10 @@ export const fetchChatRooms = async (userId: string): Promise<PaginationResponse
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true'
     },
   });
+  
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
