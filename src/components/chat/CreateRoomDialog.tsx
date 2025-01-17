@@ -7,6 +7,7 @@ import { createChatRoom } from "@/services/api";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useUser } from "@/hooks/use-user";
 
 interface CreateRoomDialogProps {
   open: boolean;
@@ -18,6 +19,7 @@ export default function CreateRoomDialog({ open, onOpenChange }: CreateRoomDialo
   const [type, setType] = useState<'public' | 'private'>('public');
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
+  const { data: user } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,9 +28,14 @@ export default function CreateRoomDialog({ open, onOpenChange }: CreateRoomDialo
       return;
     }
 
+    if (!user?.id) {
+      toast.error("User not found");
+      return;
+    }
+
     setIsLoading(true);
     try {
-      await createChatRoom(name, type);
+      await createChatRoom(name, type, user.id);
       toast.success("Chat room created successfully");
       queryClient.invalidateQueries({ queryKey: ['chatRooms'] });
       onOpenChange(false);

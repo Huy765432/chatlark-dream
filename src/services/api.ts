@@ -186,7 +186,7 @@ export const fetchRoomMembers = async (roomId: number): Promise<PaginationRespon
   return response.json();
 };
 
-export const createChatRoom = async (name: string, type: 'public' | 'private'): Promise<ChatRoom> => {
+export const createChatRoom = async (name: string, type: 'public' | 'private', userId: number): Promise<ChatRoom> => {
   const response = await fetch(`${API_HOST}/api/v1/chat-rooms`, {
     method: 'POST',
     headers: {
@@ -194,7 +194,7 @@ export const createChatRoom = async (name: string, type: 'public' | 'private'): 
       'Accept': 'application/json',
       'ngrok-skip-browser-warning': 'true'
     },
-    body: JSON.stringify({ name, type })
+    body: JSON.stringify({ name, type, user_id: userId })
   });
   
   if (!response.ok) {
