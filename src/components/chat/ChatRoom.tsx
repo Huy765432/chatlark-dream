@@ -20,14 +20,16 @@ export default function ChatRoom({ room }: ChatRoomProps) {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="p-4 border-b flex items-center gap-3">
-        <Avatar>
-          <AvatarImage src={room.avatar} />
-          <AvatarFallback>{room.name[0]}</AvatarFallback>
-        </Avatar>
-        <div>
-          <h2 className="font-semibold">{room.name}</h2>
-          <p className="text-sm text-muted-foreground">3 members</p>
+      <div className="p-4 border-b flex justify-center items-center">
+        <div className="flex items-center gap-3">
+          <Avatar>
+            <AvatarImage src={room.avatar} />
+            <AvatarFallback>{room.name[0]}</AvatarFallback>
+          </Avatar>
+          <div>
+            <h2 className="font-semibold">{room.name}</h2>
+            <p className="text-sm text-muted-foreground">3 members</p>
+          </div>
         </div>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
