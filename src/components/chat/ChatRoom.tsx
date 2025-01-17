@@ -16,7 +16,10 @@ import AddMemberDialog from "./AddMemberDialog";
 interface Message {
   id: string;
   content: string;
-  sender: string;
+  sender: {
+    id: number;
+    login: string;
+  };
   timestamp: string;
   avatar: string;
   isOwn?: boolean;
@@ -83,7 +86,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
   const messages: Message[] = [...(messagesData?.items.map(msg => ({
     id: msg.id.toString(),
     content: msg.content,
-    sender: msg.sender?.login || "",
+    sender: msg.sender,
     timestamp: new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     avatar: `https://api.dicebear.com/7.x/avatars/svg?seed=${msg.sender?.login || "anonymous"}`,
     isOwn: getStoredUser()?.id === msg.sender_id
