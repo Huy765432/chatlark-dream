@@ -1,9 +1,10 @@
 import ChatLayout from "@/components/chat/ChatLayout";
 import { useUser } from "@/hooks/use-user";
+import { useTelegramUser } from "@/hooks/use-telegram-user";
 
 export default function Index() {
-  // Thay thế "your-identity-version" bằng identity version thực tế của user
-  useUser("your-identity-version");
+  const telegramUser = useTelegramUser();
+  useUser(telegramUser?.id?.toString() || "5031217165"); // Sử dụng test ID nếu không có Telegram user ID
   
   return <ChatLayout />;
 }
