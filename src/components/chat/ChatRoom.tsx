@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send } from "lucide-react";
 import type { ChatRoom as ChatRoomType } from "./ChatLayout";
 import ChatMessage from "./ChatMessage";
-import { createMessage } from "@/services/api";
+import { createMessage, fetchMessages } from "@/services/api";
 import { getStoredUser } from "@/hooks/use-user";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 
 interface Message {
   id: string;
@@ -23,24 +24,26 @@ interface ChatRoomProps {
 }
 
 export default function ChatRoom({ room }: ChatRoomProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      content: "Hey everyone!",
-      sender: "John Doe",
-      timestamp: "12:30 PM",
-      avatar: "https://api.dicebear.com/7.x/avatars/svg?seed=john"
-    },
-    {
-      id: "2",
-      content: "Hi John! How are you?",
-      sender: "Jane Smith",
-      timestamp: "12:32 PM",
-      avatar: "https://api.dicebear.com/7.x/avatars/svg?seed=jane",
-      isOwn: true
-    }
-  ]);
   const [newMessage, setNewMessage] = useState("");
+
+  const { data: messagesData, isLoading, error } = useQuery({
+    queryKey: ['messages', room?.id],
+    queryFn: () => room ? fetchMessages(parseInt(room.id)) : null,
+    enabled: !!room,
+  });
+
+  if (error) {
+    toast.error("Failed to load messages");
+  }
+
+  const messages: Message[] = messagesData?.items.map(msg => ({
+    id: msg.id.toString(),
+    content: msg.content,
+    sender: msg.sender.login,
+    timestamp: new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    avatar: `https://api.dicebear.com/7.x/avatars/svg?seed=${msg.sender.login}`,
+    isOwn: getStoredUser()?.id === msg.sender_id
+  })) || [];
 
   if (!room) {
     return (
@@ -88,6 +91,14 @@ export default function ChatRoom({ room }: ChatRoomProps) {
       handleSendMessage();
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        Loading messages...
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col">

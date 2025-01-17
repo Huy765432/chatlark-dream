@@ -23,6 +23,18 @@ export interface ChatRoom {
   message_count: number;
 }
 
+export interface Message {
+  id: number;
+  content: string;
+  sender_id: number;
+  room_id: number;
+  created_at: string;
+  sender: {
+    id: number;
+    login: string;
+  };
+}
+
 export interface PaginationResponse<T> {
   items: T[];
   pagination: {
@@ -81,13 +93,21 @@ export const fetchChatRooms = async (userId: string): Promise<PaginationResponse
   return response.json();
 };
 
-export interface Message {
-  id: number;
-  content: string;
-  sender_id: number;
-  room_id: number;
-  created_at: string;
-}
+export const fetchMessages = async (roomId: number, page: number = 1, perPage: number = 50): Promise<PaginationResponse<Message>> => {
+  const response = await fetch(`${API_HOST}/api/v1/chat-rooms/${roomId}/messages?page=${page}&per_page=${perPage}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true'
+    },
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to fetch messages');
+  }
+  return response.json();
+};
 
 export const createMessage = async (roomId: number, content: string, senderId: number): Promise<Message> => {
   const response = await fetch(`${API_HOST}/api/v1/chat-rooms/${roomId}/messages`, {
