@@ -130,3 +130,35 @@ export const createMessage = async (roomId: number, content: string, senderId: n
   }
   return response.json();
 };
+
+export const searchUsers = async (): Promise<PaginationResponse<User>> => {
+  const response = await fetch(`${API_HOST}/api/v1/users`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true'
+    },
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to search users');
+  }
+  return response.json();
+};
+
+export const addMemberToRoom = async (roomId: number, userId: number): Promise<void> => {
+  const response = await fetch(`${API_HOST}/api/v1/chat-rooms/${roomId}/members`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true'
+    },
+    body: JSON.stringify({ user_id: userId })
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to add member to room');
+  }
+};

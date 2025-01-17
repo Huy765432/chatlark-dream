@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { io } from "socket.io-client";
 import { API_HOST } from "@/services/api";
+import AddMemberDialog from "./AddMemberDialog";
 
 interface Message {
   id: string;
@@ -27,6 +28,7 @@ interface ChatRoomProps {
 
 export default function ChatRoom({ room }: ChatRoomProps) {
   const [newMessage, setNewMessage] = useState("");
+  const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: messagesData, isLoading, error } = useQuery({
@@ -131,7 +133,10 @@ export default function ChatRoom({ room }: ChatRoomProps) {
   return (
     <div className="h-full flex flex-col">
       <div className="p-4 border-b flex md:justify-start justify-center items-center">
-        <div className="flex items-center gap-3">
+        <button 
+          className="flex items-center gap-3 hover:bg-accent p-2 rounded-lg transition-colors"
+          onClick={() => setIsAddMemberOpen(true)}
+        >
           <Avatar>
             <AvatarImage src={room.avatar} />
             <AvatarFallback>{room.name[0]}</AvatarFallback>
@@ -140,7 +145,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
             <h2 className="font-semibold">{room.name}</h2>
             <p className="text-sm text-muted-foreground">3 members</p>
           </div>
-        </div>
+        </button>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
@@ -167,6 +172,12 @@ export default function ChatRoom({ room }: ChatRoomProps) {
           <Send className="h-4 w-4" />
         </Button>
       </div>
+
+      <AddMemberDialog 
+        open={isAddMemberOpen}
+        onOpenChange={setIsAddMemberOpen}
+        roomId={room.id}
+      />
     </div>
   );
 }
