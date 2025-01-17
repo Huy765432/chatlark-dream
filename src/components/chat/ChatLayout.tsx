@@ -58,7 +58,11 @@ export default function ChatLayout() {
         <div className="flex-1 relative">
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="absolute top-4 left-4 z-10">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="fixed top-4 left-4 z-50"
+              >
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
