@@ -55,10 +55,10 @@ export default function ChatLayout() {
   return (
     <div className="h-screen flex">
       {isMobile ? (
-        <>
+        <div className="flex-1 relative">
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="absolute top-4 left-4">
+              <Button variant="ghost" size="icon" className="absolute top-4 left-4 z-10">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
@@ -70,10 +70,10 @@ export default function ChatLayout() {
               />
             </SheetContent>
           </Sheet>
-          <div className="flex-1">
+          <div className="flex-1 h-full">
             <ChatRoom room={currentRoom} />
           </div>
-        </>
+        </div>
       ) : (
         <>
           <div className="w-[300px] border-r">
