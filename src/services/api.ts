@@ -80,3 +80,31 @@ export const fetchChatRooms = async (userId: string): Promise<PaginationResponse
   }
   return response.json();
 };
+
+export interface Message {
+  id: number;
+  content: string;
+  sender_id: number;
+  room_id: number;
+  created_at: string;
+}
+
+export const createMessage = async (roomId: number, content: string, senderId: number): Promise<Message> => {
+  const response = await fetch(`${API_HOST}/api/v1/chat-rooms/${roomId}/messages`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true'
+    },
+    body: JSON.stringify({
+      content,
+      sender_id: senderId
+    })
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to send message');
+  }
+  return response.json();
+};

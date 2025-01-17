@@ -5,6 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Send } from "lucide-react";
 import type { ChatRoom as ChatRoomType } from "./ChatLayout";
 import ChatMessage from "./ChatMessage";
+import { createMessage } from "@/services/api";
+import { getStoredUser } from "@/hooks/use-user";
+import { toast } from "sonner";
 
 interface Message {
   id: string;
@@ -47,20 +50,37 @@ export default function ChatRoom({ room }: ChatRoomProps) {
     );
   }
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
-    const message: Message = {
-      id: Date.now().toString(),
-      content: newMessage,
-      sender: "Jane Smith", // Giả định người dùng hiện tại
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      avatar: "https://api.dicebear.com/7.x/avatars/svg?seed=jane",
-      isOwn: true
-    };
+    const user = getStoredUser();
+    if (!user) {
+      toast.error("You must be logged in to send messages");
+      return;
+    }
 
-    setMessages([...messages, message]);
-    setNewMessage("");
+    try {
+      await createMessage(
+        parseInt(room.id), 
+        newMessage.trim(),
+        user.id
+      );
+
+      const message: Message = {
+        id: Date.now().toString(),
+        content: newMessage,
+        sender: user.login,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        avatar: `https://api.dicebear.com/7.x/avatars/svg?seed=${user.login}`,
+        isOwn: true
+      };
+
+      setMessages([...messages, message]);
+      setNewMessage("");
+      
+    } catch (error) {
+      toast.error("Failed to send message");
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
