@@ -6,7 +6,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import ChatList from "./ChatList";
 import ChatRoom from "./ChatRoom";
 import { useQuery } from "@tanstack/react-query";
-import { fetchUsers } from "@/services/api";
+import { fetchChatRooms } from "@/services/api";
 import { toast } from "sonner";
 import { useTelegramUser } from "@/hooks/use-telegram-user";
 
@@ -24,21 +24,22 @@ export default function ChatLayout() {
   const isMobile = useIsMobile();
   const telegramUser = useTelegramUser();
 
-  const { data: usersData, isLoading, error } = useQuery({
-    queryKey: ['users'],
-    queryFn: fetchUsers,
+  const { data: roomsData, isLoading, error } = useQuery({
+    queryKey: ['chatRooms', telegramUser?.id],
+    queryFn: () => telegramUser?.id ? fetchChatRooms(telegramUser.id.toString()) : null,
+    enabled: !!telegramUser?.id,
   });
 
   if (error) {
-    toast.error("Failed to load users");
+    toast.error("Failed to load chat rooms");
   }
 
-  const rooms: ChatRoom[] = usersData?.items.map(user => ({
-    id: user.id.toString(),
-    name: user.login,
-    lastMessage: user.additional_info || "No message yet",
-    lastMessageTime: user.logged_on || "Never",
-    avatar: `https://api.dicebear.com/7.x/avatars/svg?seed=${user.login}`
+  const rooms: ChatRoom[] = roomsData?.items.map(room => ({
+    id: room.id.toString(),
+    name: room.name,
+    lastMessage: `${room.member_count} members, ${room.message_count} messages`,
+    lastMessageTime: new Date(room.created_at).toLocaleString(),
+    avatar: `https://api.dicebear.com/7.x/avatars/svg?seed=${room.name}`
   })) || [];
 
   // Set initial selected room if not set and rooms are available
