@@ -1,9 +1,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ChatRoom } from "./ChatLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Send } from "lucide-react";
+import type { ChatRoom as ChatRoomType } from "./ChatLayout";
 import ChatMessage from "./ChatMessage";
 
 interface ChatRoomProps {
-  room?: ChatRoom;
+  room?: ChatRoomType;
 }
 
 export default function ChatRoom({ room }: ChatRoomProps) {
@@ -42,12 +45,15 @@ export default function ChatRoom({ room }: ChatRoomProps) {
           isOwn
         />
       </div>
-      <div className="p-4 border-t">
-        <input
+      <div className="p-4 border-t flex gap-2">
+        <Input
           type="text"
           placeholder="Type a message..."
-          className="w-full p-2 rounded-md border focus:outline-none focus:ring-2 focus:ring-primary"
+          className="flex-1"
         />
+        <Button size="icon" className="shrink-0">
+          <Send className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );

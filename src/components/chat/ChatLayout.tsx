@@ -40,10 +40,14 @@ const mockRooms: ChatRoom[] = [
 
 export default function ChatLayout() {
   const [selectedRoom, setSelectedRoom] = useState<string>(mockRooms[0].id);
+  const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
 
   const handleRoomSelect = (roomId: string) => {
     setSelectedRoom(roomId);
+    if (isMobile) {
+      setIsOpen(false);
+    }
   };
 
   const currentRoom = mockRooms.find(room => room.id === selectedRoom);
@@ -52,7 +56,7 @@ export default function ChatLayout() {
     <div className="h-screen flex">
       {isMobile ? (
         <>
-          <Sheet>
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="absolute top-4 left-4">
                 <Menu className="h-5 w-5" />
