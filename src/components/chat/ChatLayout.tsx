@@ -44,7 +44,6 @@ export default function ChatLayout() {
     member_count: room.member_count
   })) || [];
 
-  // Set initial selected room if not set and rooms are available
   if (rooms.length > 0 && !selectedRoom) {
     setSelectedRoom(rooms[0].id);
   }
@@ -81,7 +80,7 @@ export default function ChatLayout() {
         </div>
       )}
       
-      <div className="flex-1 flex">
+      <div className="flex-1 flex overflow-hidden">
         {isMobile ? (
           <div className="flex-1 relative">
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -100,7 +99,7 @@ export default function ChatLayout() {
           </div>
         ) : (
           <>
-            <div className="w-[300px] border-r">
+            <div className="w-[300px] border-r h-full overflow-hidden">
               <ChatList
                 rooms={rooms}
                 selectedRoom={selectedRoom}
@@ -108,7 +107,7 @@ export default function ChatLayout() {
                 isLoading={isLoading}
               />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 h-full overflow-hidden">
               <ChatRoom room={currentRoom} />
             </div>
           </>
