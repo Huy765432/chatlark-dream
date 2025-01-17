@@ -6,8 +6,11 @@ interface TelegramUser {
 
 export const useTelegramUser = (): TelegramUser | null => {
   if (!window.Telegram?.WebApp?.initDataUnsafe?.user) {
+    console.log("Telegram user data not available:", window.Telegram?.WebApp?.initDataUnsafe);
     return null;
   }
 
-  return window.Telegram.WebApp.initDataUnsafe.user;
+  const user = window.Telegram.WebApp.initDataUnsafe.user;
+  console.log("Telegram user data:", user);
+  return user;
 };
