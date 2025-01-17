@@ -21,11 +21,18 @@ export default function ChatList({ rooms, selectedRoom, onRoomSelect, isLoading 
     <div className="h-full flex flex-col">
       <div className="p-4 border-b flex justify-between items-center">
         <h2 className="font-semibold text-lg">Messages</h2>
-        <Button variant="ghost" size="icon" onClick={() => setCreateDialogOpen(true)}>
-          <Plus className="h-5 w-5" />
-        </Button>
       </div>
       <div className="flex-1 overflow-y-auto">
+        <div className="p-4 border-b">
+          <Button 
+            variant="outline" 
+            className="w-full justify-start gap-2" 
+            onClick={() => setCreateDialogOpen(true)}
+          >
+            <Plus className="h-5 w-5" />
+            Create New Room
+          </Button>
+        </div>
         {isLoading ? (
           // Loading skeletons
           Array.from({ length: 3 }).map((_, index) => (
