@@ -11,6 +11,7 @@ export interface User {
   registered_on: string | null;
   logged_on: string | null;
   groups: string[];
+  capabilities?: string[];
 }
 
 export interface ChatRoom {
@@ -31,6 +32,22 @@ export interface PaginationResponse<T> {
     pages: number;
   };
 }
+
+export const fetchUserByIdentity = async (identityVer: string): Promise<User> => {
+  const response = await fetch(`${API_HOST}/api/v1/users/${identityVer}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true'
+    },
+  });
+  
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+};
 
 export const fetchUsers = async (): Promise<PaginationResponse<User>> => {
   const response = await fetch(`${API_HOST}/api/v1/users?page=1&per_page=10`, {
