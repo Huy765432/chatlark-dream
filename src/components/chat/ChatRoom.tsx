@@ -20,7 +20,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="p-4 border-b flex justify-center items-center">
+      <div className="p-4 border-b flex md:justify-start justify-center items-center">
         <div className="flex items-center gap-3">
           <Avatar>
             <AvatarImage src={room.avatar} />
