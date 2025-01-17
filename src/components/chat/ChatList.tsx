@@ -19,20 +19,20 @@ export default function ChatList({ rooms, selectedRoom, onRoomSelect, isLoading 
 
   return (
     <div className="h-full flex flex-col bg-card">
-      <div className="p-4 border-b flex justify-between items-center bg-gradient-to-r from-accent to-background">
+      <div className="p-4 border-b flex justify-between items-center bg-gradient-to-r from-accent to-background sticky top-0 z-10">
         <h2 className="font-semibold text-lg">Messages</h2>
       </div>
+      <div className="p-4 border-b sticky top-[73px] bg-background z-10">
+        <Button 
+          variant="outline" 
+          className="w-full justify-start gap-2 hover:scale-105 transition-transform" 
+          onClick={() => setCreateDialogOpen(true)}
+        >
+          <Plus className="h-5 w-5" />
+          Create New Room
+        </Button>
+      </div>
       <div className="flex-1 overflow-y-auto">
-        <div className="p-4 border-b">
-          <Button 
-            variant="outline" 
-            className="w-full justify-start gap-2 hover:scale-105 transition-transform" 
-            onClick={() => setCreateDialogOpen(true)}
-          >
-            <Plus className="h-5 w-5" />
-            Create New Room
-          </Button>
-        </div>
         {isLoading ? (
           Array.from({ length: 3 }).map((_, index) => (
             <div key={index} className="p-4 flex items-start gap-3">
