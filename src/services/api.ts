@@ -41,7 +41,13 @@ export const fetchUsers = async (): Promise<PaginationResponse<User>> => {
 };
 
 export const fetchChatRooms = async (userId: string): Promise<PaginationResponse<ChatRoom>> => {
-  const response = await fetch(`${API_HOST}/api/v1/users/${userId}/chat-rooms?page=1&per_page=10`);
+  const response = await fetch(`${API_HOST}/api/v1/users/${userId}/chat-rooms?page=1&per_page=10`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+  });
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
