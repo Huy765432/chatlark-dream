@@ -34,7 +34,7 @@ export interface PaginationResponse<T> {
 }
 
 export const fetchUserByIdentity = async (identityVer: string): Promise<User> => {
-  const response = await fetch(`${API_HOST}/api/v1/users/${identityVer}`, {
+  const response = await fetch(`${API_HOST}/api/v1/users/identity/${identityVer}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
