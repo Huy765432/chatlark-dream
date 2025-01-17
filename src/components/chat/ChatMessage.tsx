@@ -23,7 +23,7 @@ export default function ChatMessage({
     )}>
       <Avatar className="w-8 h-8 transition-transform hover:scale-110">
         <AvatarImage src={avatar} />
-        <AvatarFallback>{sender[0]}</AvatarFallback>
+        <AvatarFallback>{sender[0]?.toUpperCase()}</AvatarFallback>
       </Avatar>
       <div className={cn(
         "flex flex-col max-w-[80%]",
