@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send } from "lucide-react";
+import { Send, UserPlus } from "lucide-react";
 import type { ChatRoom as ChatRoomType } from "./ChatLayout";
 import ChatMessage from "./ChatMessage";
 import { createMessage, fetchMessages } from "@/services/api";
@@ -43,7 +43,6 @@ export default function ChatRoom({ room }: ChatRoomProps) {
     enabled: !!room,
   });
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
   }, [messagesData]);
@@ -51,34 +50,26 @@ export default function ChatRoom({ room }: ChatRoomProps) {
   useEffect(() => {
     if (!room) return;
 
-    // Initialize socket connection
     const socket = io(API_HOST, {
       transports: ['websocket'],
       autoConnect: true
     });
 
-    // Handle connection
     socket.on('connect', () => {
       console.log('Connected to WebSocket');
-      // Join the room
       socket.emit('join', { room: room.id });
     });
 
-    // Handle new messages
     socket.on('new_message', (messageData) => {
-      // Invalidate and refetch messages query
       queryClient.invalidateQueries({ queryKey: ['messages', room.id] });
       toast.success("New message received!");
-      // Scroll to bottom when new message arrives
       scrollToBottom();
     });
 
-    // Handle status messages
     socket.on('status', (data) => {
       console.log('Status:', data.msg);
     });
 
-    // Cleanup on unmount
     return () => {
       socket.emit('leave', { room: room.id });
       socket.disconnect();
@@ -100,8 +91,11 @@ export default function ChatRoom({ room }: ChatRoomProps) {
 
   if (!room) {
     return (
-      <div className="h-full flex items-center justify-center text-muted-foreground">
-        Select a chat to start messaging
+      <div className="h-full flex items-center justify-center text-muted-foreground bg-gradient-to-br from-background to-accent/20">
+        <div className="text-center space-y-2 animate-fade-in">
+          <p className="text-lg">Select a chat to start messaging</p>
+          <p className="text-sm text-muted-foreground">Choose a room from the list to begin your conversation</p>
+        </div>
       </div>
     );
   }
@@ -124,7 +118,6 @@ export default function ChatRoom({ room }: ChatRoomProps) {
 
       setNewMessage("");
       scrollToBottom();
-      // Maintain focus on input after sending message
       inputRef.current?.focus();
       
     } catch (error) {
@@ -140,20 +133,22 @@ export default function ChatRoom({ room }: ChatRoomProps) {
 
   if (isLoading) {
     return (
-      <div className="h-full flex items-center justify-center">
-        Loading messages...
+      <div className="h-full flex items-center justify-center bg-gradient-to-br from-background to-accent/20">
+        <div className="animate-pulse text-center">
+          <p className="text-lg">Loading messages...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="p-4 border-b flex md:justify-start justify-center items-center">
+    <div className="h-full flex flex-col bg-gradient-to-br from-background to-accent/10">
+      <div className="p-4 border-b flex justify-between items-center backdrop-blur-sm bg-background/80">
         <button 
-          className="flex items-center gap-3 hover:bg-accent p-2 rounded-lg transition-colors"
+          className="flex items-center gap-3 hover:bg-accent/80 p-2 rounded-lg transition-all group"
           onClick={() => setIsAddMemberOpen(true)}
         >
-          <Avatar>
+          <Avatar className="transition-transform group-hover:scale-110">
             <AvatarImage src={room.avatar} />
             <AvatarFallback>{room.name[0]}</AvatarFallback>
           </Avatar>
@@ -161,6 +156,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
             <h2 className="font-semibold">{room.name}</h2>
             <p className="text-sm text-muted-foreground">{room.member_count} members</p>
           </div>
+          <UserPlus className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" />
         </button>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -176,19 +172,25 @@ export default function ChatRoom({ room }: ChatRoomProps) {
         ))}
         <div ref={messagesEndRef} />
       </div>
-      <div className="p-4 border-t flex gap-2">
-        <Input
-          ref={inputRef}
-          type="text"
-          placeholder="Type a message..."
-          className="flex-1"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyPress={handleKeyPress}
-        />
-        <Button size="icon" className="shrink-0" onClick={handleSendMessage}>
-          <Send className="h-4 w-4" />
-        </Button>
+      <div className="p-4 border-t backdrop-blur-sm bg-background/80">
+        <div className="flex gap-2 max-w-3xl mx-auto">
+          <Input
+            ref={inputRef}
+            type="text"
+            placeholder="Type a message..."
+            className="flex-1 bg-background/50 backdrop-blur-sm focus:bg-background transition-colors"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
+          />
+          <Button 
+            size="icon" 
+            className="shrink-0 hover:scale-105 transition-transform" 
+            onClick={handleSendMessage}
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       <AddMemberDialog 

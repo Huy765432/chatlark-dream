@@ -18,15 +18,15 @@ export default function ChatList({ rooms, selectedRoom, onRoomSelect, isLoading 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="p-4 border-b flex justify-between items-center">
+    <div className="h-full flex flex-col bg-card">
+      <div className="p-4 border-b flex justify-between items-center bg-gradient-to-r from-accent to-background">
         <h2 className="font-semibold text-lg">Messages</h2>
       </div>
       <div className="flex-1 overflow-y-auto">
         <div className="p-4 border-b">
           <Button 
             variant="outline" 
-            className="w-full justify-start gap-2" 
+            className="w-full justify-start gap-2 hover:scale-105 transition-transform" 
             onClick={() => setCreateDialogOpen(true)}
           >
             <Plus className="h-5 w-5" />
@@ -34,7 +34,6 @@ export default function ChatList({ rooms, selectedRoom, onRoomSelect, isLoading 
           </Button>
         </div>
         {isLoading ? (
-          // Loading skeletons
           Array.from({ length: 3 }).map((_, index) => (
             <div key={index} className="p-4 flex items-start gap-3">
               <Skeleton className="h-10 w-10 rounded-full" />
@@ -50,11 +49,11 @@ export default function ChatList({ rooms, selectedRoom, onRoomSelect, isLoading 
               key={room.id}
               onClick={() => onRoomSelect(room.id)}
               className={cn(
-                "w-full p-4 flex items-start gap-3 hover:bg-accent transition-colors",
-                selectedRoom === room.id && "bg-accent"
+                "w-full p-4 flex items-start gap-3 transition-all duration-200 hover:bg-accent/50",
+                selectedRoom === room.id ? "bg-accent/80 shadow-md" : ""
               )}
             >
-              <Avatar>
+              <Avatar className="transition-transform hover:scale-110">
                 <AvatarImage src={room.avatar} />
                 <AvatarFallback>{room.name[0]}</AvatarFallback>
               </Avatar>
