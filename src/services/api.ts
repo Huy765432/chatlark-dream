@@ -24,6 +24,7 @@ export interface ChatRoom {
 }
 
 export interface Message {
+  sender_name: string;
   id: number;
   chat_room_id: number;
   sender_id: number;
@@ -64,7 +65,7 @@ export const fetchUserByIdentity = async (identityVer: string): Promise<User> =>
       'ngrok-skip-browser-warning': 'true'
     },
   });
-  
+
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
@@ -80,7 +81,7 @@ export const fetchUsers = async (): Promise<PaginationResponse<User>> => {
       'ngrok-skip-browser-warning': 'true'
     },
   });
-  
+
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
@@ -96,7 +97,7 @@ export const fetchChatRooms = async (userId: string): Promise<PaginationResponse
       'ngrok-skip-browser-warning': 'true'
     },
   });
-  
+
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
@@ -112,7 +113,7 @@ export const fetchMessages = async (roomId: number, page: number = 1, perPage: n
       'ngrok-skip-browser-warning': 'true'
     },
   });
-  
+
   if (!response.ok) {
     throw new Error('Failed to fetch messages');
   }
@@ -132,7 +133,7 @@ export const createMessage = async (roomId: number, content: string, senderId: n
       sender_id: senderId
     })
   });
-  
+
   if (!response.ok) {
     throw new Error('Failed to send message');
   }
@@ -148,7 +149,7 @@ export const searchUsers = async (): Promise<PaginationResponse<User>> => {
       'ngrok-skip-browser-warning': 'true'
     },
   });
-  
+
   if (!response.ok) {
     throw new Error('Failed to search users');
   }
@@ -165,7 +166,7 @@ export const addMemberToRoom = async (roomId: number, userId: number): Promise<v
     },
     body: JSON.stringify({ user_id: userId })
   });
-  
+
   if (!response.ok) {
     throw new Error('Failed to add member to room');
   }
@@ -180,7 +181,7 @@ export const fetchRoomMembers = async (roomId: number): Promise<PaginationRespon
       'ngrok-skip-browser-warning': 'true'
     },
   });
-  
+
   if (!response.ok) {
     throw new Error('Failed to fetch room members');
   }
@@ -197,7 +198,7 @@ export const createChatRoom = async (name: string, type: 'public' | 'private', u
     },
     body: JSON.stringify({ name, type, user_id: userId })
   });
-  
+
   if (!response.ok) {
     throw new Error('Failed to create chat room');
   }

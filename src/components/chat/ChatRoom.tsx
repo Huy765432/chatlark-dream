@@ -85,7 +85,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
     id: msg.id.toString(),
     content: msg.content,
     sender: msg.sender?.login || "",
-    sender_name: msg.sender?.name || msg.sender?.login || "",  // Sử dụng name hoặc fallback về login
+    sender_name: msg.sender_name || "",  // Sử dụng name hoặc fallback về login
     timestamp: new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     avatar: `https://api.dicebear.com/7.x/avatars/svg?seed=${msg.sender?.login || "anonymous"}`,
     isOwn: getStoredUser()?.id === msg.sender_id
@@ -113,7 +113,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
 
     try {
       await createMessage(
-        parseInt(room.id), 
+        parseInt(room.id),
         newMessage.trim(),
         user.id
       );
@@ -121,7 +121,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
       setNewMessage("");
       scrollToBottom();
       inputRef.current?.focus();
-      
+
     } catch (error) {
       toast.error("Failed to send message");
     }
@@ -146,7 +146,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
   return (
     <div className="h-full flex flex-col bg-gradient-to-br from-background to-accent/10">
       <div className="p-4 border-b flex justify-between items-center backdrop-blur-sm bg-background/80 sticky top-0 z-10">
-        <button 
+        <button
           className="flex items-center gap-3 hover:bg-accent/80 p-2 rounded-lg transition-all group"
           onClick={() => setIsAddMemberOpen(true)}
         >
@@ -187,9 +187,9 @@ export default function ChatRoom({ room }: ChatRoomProps) {
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
           />
-          <Button 
-            size="icon" 
-            className="shrink-0 hover:scale-105 transition-transform" 
+          <Button
+            size="icon"
+            className="shrink-0 hover:scale-105 transition-transform"
             onClick={handleSendMessage}
           >
             <Send className="h-4 w-4" />
@@ -197,7 +197,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
         </div>
       </div>
 
-      <AddMemberDialog 
+      <AddMemberDialog
         open={isAddMemberOpen}
         onOpenChange={setIsAddMemberOpen}
         roomId={room.id}
