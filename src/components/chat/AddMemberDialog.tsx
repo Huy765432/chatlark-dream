@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
-import { searchUsers, addMemberToRoom } from "@/services/api";
+import { searchUsers, addMemberToRoom, fetchRoomMembers } from "@/services/api";
 import { toast } from "sonner";
 import { Loader2, Search, UserPlus } from "lucide-react";
 
@@ -22,9 +22,15 @@ interface AddMemberDialogProps {
 export default function AddMemberDialog({ open, onOpenChange, roomId }: AddMemberDialogProps) {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data: usersData, isLoading } = useQuery({
+  const { data: usersData, isLoading: isLoadingUsers } = useQuery({
     queryKey: ['users', searchTerm],
     queryFn: searchUsers,
+    enabled: open,
+  });
+
+  const { data: membersData, isLoading: isLoadingMembers } = useQuery({
+    queryKey: ['roomMembers', roomId],
+    queryFn: () => fetchRoomMembers(parseInt(roomId)),
     enabled: open,
   });
 
@@ -38,10 +44,15 @@ export default function AddMemberDialog({ open, onOpenChange, roomId }: AddMembe
     }
   };
 
+  const existingMemberIds = new Set(membersData?.items.map(member => member.user_id) || []);
+
   const filteredUsers = usersData?.items.filter(user => 
-    user.login.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    !existingMemberIds.has(user.id) && // Lọc bỏ những user đã có trong nhóm
+    (user.login.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchTerm.toLowerCase()))
   ) || [];
+
+  const isLoading = isLoadingUsers || isLoadingMembers;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -64,7 +75,7 @@ export default function AddMemberDialog({ open, onOpenChange, roomId }: AddMembe
               <div className="flex items-center justify-center py-4">
                 <Loader2 className="h-6 w-6 animate-spin" />
               </div>
-            ) : (
+            ) : filteredUsers.length > 0 ? (
               filteredUsers.map((user) => (
                 <div
                   key={user.id}
@@ -89,6 +100,10 @@ export default function AddMemberDialog({ open, onOpenChange, roomId }: AddMembe
                   </Button>
                 </div>
               ))
+            ) : (
+              <div className="text-center text-muted-foreground py-4">
+                No users found
+              </div>
             )}
           </div>
         </div>

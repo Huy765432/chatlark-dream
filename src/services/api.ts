@@ -35,6 +35,13 @@ export interface Message {
   };
 }
 
+export interface Member {
+  id: number;
+  user_id: number;
+  chat_room_id: number;
+  user: User;
+}
+
 export interface PaginationInfo {
   page: number;
   per_page: number;
@@ -161,4 +168,20 @@ export const addMemberToRoom = async (roomId: number, userId: number): Promise<v
   if (!response.ok) {
     throw new Error('Failed to add member to room');
   }
+};
+
+export const fetchRoomMembers = async (roomId: number): Promise<PaginationResponse<Member>> => {
+  const response = await fetch(`${API_HOST}/api/v1/chat-rooms/${roomId}/members`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true'
+    },
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to fetch room members');
+  }
+  return response.json();
 };
