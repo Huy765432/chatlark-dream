@@ -1,3 +1,5 @@
+export const API_HOST = 'https://cb99-2402-800-61b3-c7bb-da39-7e8-1321-b637.ngrok-free.app';
+
 export interface User {
   id: number;
   login: string;
@@ -31,7 +33,7 @@ export interface PaginationResponse<T> {
 }
 
 export const fetchUsers = async (): Promise<PaginationResponse<User>> => {
-  const response = await fetch('http://127.0.0.1:5005/api/v1/users?page=1&per_page=10');
+  const response = await fetch(`${API_HOST}/api/v1/users?page=1&per_page=10`);
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
@@ -39,7 +41,7 @@ export const fetchUsers = async (): Promise<PaginationResponse<User>> => {
 };
 
 export const fetchChatRooms = async (userId: string): Promise<PaginationResponse<ChatRoom>> => {
-  const response = await fetch(`http://127.0.0.1:5005/api/v1/users/${userId}/chat-rooms?page=1&per_page=10`);
+  const response = await fetch(`${API_HOST}/api/v1/users/${userId}/chat-rooms?page=1&per_page=10`);
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
