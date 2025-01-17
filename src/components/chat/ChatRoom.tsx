@@ -8,7 +8,9 @@ import ChatMessage from "./ChatMessage";
 import { createMessage, fetchMessages } from "@/services/api";
 import { getStoredUser } from "@/hooks/use-user";
 import { toast } from "sonner";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { io } from "socket.io-client";
+import { API_HOST } from "@/services/api";
 
 interface Message {
   id: string;
@@ -25,12 +27,48 @@ interface ChatRoomProps {
 
 export default function ChatRoom({ room }: ChatRoomProps) {
   const [newMessage, setNewMessage] = useState("");
+  const queryClient = useQueryClient();
 
   const { data: messagesData, isLoading, error } = useQuery({
     queryKey: ['messages', room?.id],
     queryFn: () => room ? fetchMessages(parseInt(room.id)) : null,
     enabled: !!room,
   });
+
+  useEffect(() => {
+    if (!room) return;
+
+    // Initialize socket connection
+    const socket = io(API_HOST, {
+      transports: ['websocket'],
+      autoConnect: true
+    });
+
+    // Handle connection
+    socket.on('connect', () => {
+      console.log('Connected to WebSocket');
+      // Join the room
+      socket.emit('join', { room: room.id });
+    });
+
+    // Handle new messages
+    socket.on('new_message', (messageData) => {
+      // Invalidate and refetch messages query
+      queryClient.invalidateQueries({ queryKey: ['messages', room.id] });
+      toast.success("New message received!");
+    });
+
+    // Handle status messages
+    socket.on('status', (data) => {
+      console.log('Status:', data.msg);
+    });
+
+    // Cleanup on unmount
+    return () => {
+      socket.emit('leave', { room: room.id });
+      socket.disconnect();
+    };
+  }, [room?.id, queryClient]);
 
   if (error) {
     toast.error("Failed to load messages");
