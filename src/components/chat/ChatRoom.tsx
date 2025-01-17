@@ -69,16 +69,6 @@ export default function ChatRoom({ room }: ChatRoomProps) {
         user.id
       );
 
-      const message: Message = {
-        id: Date.now().toString(),
-        content: newMessage,
-        sender: user.login,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        avatar: `https://api.dicebear.com/7.x/avatars/svg?seed=${user.login}`,
-        isOwn: true
-      };
-
-      setMessages([...messages, message]);
       setNewMessage("");
       
     } catch (error) {

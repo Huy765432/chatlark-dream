@@ -25,9 +25,9 @@ export interface ChatRoom {
 
 export interface Message {
   id: number;
-  content: string;
+  chat_room_id: number;
   sender_id: number;
-  room_id: number;
+  content: string;
   created_at: string;
   sender: {
     id: number;
@@ -35,14 +35,16 @@ export interface Message {
   };
 }
 
+export interface PaginationInfo {
+  page: number;
+  per_page: number;
+  total: number;
+  pages: number;
+}
+
 export interface PaginationResponse<T> {
   items: T[];
-  pagination: {
-    page: number;
-    per_page: number;
-    total: number;
-    pages: number;
-  };
+  pagination: PaginationInfo;
 }
 
 export const fetchUserByIdentity = async (identityVer: string): Promise<User> => {
