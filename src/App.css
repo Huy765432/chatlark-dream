@@ -40,3 +40,8 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Thêm CSS cho safe-area-bottom */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
