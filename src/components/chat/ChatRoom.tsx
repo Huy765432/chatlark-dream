@@ -143,7 +143,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
 
   return (
     <div className="h-full flex flex-col bg-gradient-to-br from-background to-accent/10">
-      <div className="p-4 border-b flex justify-between items-center backdrop-blur-sm bg-background/80">
+      <div className="p-4 border-b flex justify-between items-center backdrop-blur-sm bg-background/80 sticky top-0 z-10">
         <button 
           className="flex items-center gap-3 hover:bg-accent/80 p-2 rounded-lg transition-all group"
           onClick={() => setIsAddMemberOpen(true)}
@@ -159,6 +159,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
           <UserPlus className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" />
         </button>
       </div>
+
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
           <ChatMessage
@@ -172,7 +173,8 @@ export default function ChatRoom({ room }: ChatRoomProps) {
         ))}
         <div ref={messagesEndRef} />
       </div>
-      <div className="p-4 border-t backdrop-blur-sm bg-background/80">
+
+      <div className="p-4 border-t backdrop-blur-sm bg-background/80 sticky bottom-0">
         <div className="flex gap-2 max-w-3xl mx-auto">
           <Input
             ref={inputRef}

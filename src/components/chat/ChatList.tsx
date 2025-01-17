@@ -32,7 +32,7 @@ export default function ChatList({ rooms, selectedRoom, onRoomSelect, isLoading 
           Create New Room
         </Button>
       </div>
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto min-h-0">
         {isLoading ? (
           Array.from({ length: 3 }).map((_, index) => (
             <div key={index} className="p-4 flex items-start gap-3">
