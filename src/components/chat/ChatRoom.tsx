@@ -143,7 +143,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
           </Avatar>
           <div>
             <h2 className="font-semibold">{room.name}</h2>
-            <p className="text-sm text-muted-foreground">3 members</p>
+            <p className="text-sm text-muted-foreground">{room.member_count} members</p>
           </div>
         </button>
       </div>
