@@ -5,6 +5,9 @@ import { Menu } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ChatList from "./ChatList";
 import ChatRoom from "./ChatRoom";
+import { useQuery } from "@tanstack/react-query";
+import { fetchUsers } from "@/services/api";
+import { toast } from "sonner";
 
 export interface ChatRoom {
   id: string;
@@ -14,34 +17,32 @@ export interface ChatRoom {
   avatar: string;
 }
 
-const mockRooms: ChatRoom[] = [
-  {
-    id: "1",
-    name: "General Chat",
-    lastMessage: "Hey everyone! How are you doing?",
-    lastMessageTime: "12:30 PM",
-    avatar: "https://api.dicebear.com/7.x/avatars/svg?seed=1"
-  },
-  {
-    id: "2", 
-    name: "Design Team",
-    lastMessage: "The new mockups look great!",
-    lastMessageTime: "10:15 AM",
-    avatar: "https://api.dicebear.com/7.x/avatars/svg?seed=2"
-  },
-  {
-    id: "3",
-    name: "Development",
-    lastMessage: "PR is ready for review",
-    lastMessageTime: "Yesterday",
-    avatar: "https://api.dicebear.com/7.x/avatars/svg?seed=3"
-  },
-];
-
 export default function ChatLayout() {
-  const [selectedRoom, setSelectedRoom] = useState<string>(mockRooms[0].id);
+  const [selectedRoom, setSelectedRoom] = useState<string>("");
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
+
+  const { data: usersData, isLoading, error } = useQuery({
+    queryKey: ['users'],
+    queryFn: fetchUsers,
+  });
+
+  if (error) {
+    toast.error("Failed to load users");
+  }
+
+  const rooms: ChatRoom[] = usersData?.items.map(user => ({
+    id: user.id.toString(),
+    name: user.login,
+    lastMessage: user.additional_info || "No message yet",
+    lastMessageTime: user.logged_on || "Never",
+    avatar: `https://api.dicebear.com/7.x/avatars/svg?seed=${user.login}`
+  })) || [];
+
+  // Set initial selected room if not set and rooms are available
+  if (rooms.length > 0 && !selectedRoom) {
+    setSelectedRoom(rooms[0].id);
+  }
 
   const handleRoomSelect = (roomId: string) => {
     setSelectedRoom(roomId);
@@ -50,7 +51,7 @@ export default function ChatLayout() {
     }
   };
 
-  const currentRoom = mockRooms.find(room => room.id === selectedRoom);
+  const currentRoom = rooms.find(room => room.id === selectedRoom);
 
   return (
     <div className="h-screen flex">
@@ -68,9 +69,10 @@ export default function ChatLayout() {
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-[300px]">
               <ChatList 
-                rooms={mockRooms}
+                rooms={rooms}
                 selectedRoom={selectedRoom}
                 onRoomSelect={handleRoomSelect}
+                isLoading={isLoading}
               />
             </SheetContent>
           </Sheet>
@@ -82,9 +84,10 @@ export default function ChatLayout() {
         <>
           <div className="w-[300px] border-r">
             <ChatList
-              rooms={mockRooms}
+              rooms={rooms}
               selectedRoom={selectedRoom}
               onRoomSelect={handleRoomSelect}
+              isLoading={isLoading}
             />
           </div>
           <div className="flex-1">
