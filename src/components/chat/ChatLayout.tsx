@@ -40,7 +40,8 @@ export default function ChatLayout() {
     name: room.name,
     lastMessage: `${room.member_count} members, ${room.message_count} messages`,
     lastMessageTime: new Date(room.created_at).toLocaleString(),
-    avatar: `https://api.dicebear.com/7.x/avatars/svg?seed=${room.name}`
+    avatar: `https://api.dicebear.com/7.x/avatars/svg?seed=${room.name}`,
+    member_count: room.member_count
   })) || [];
 
   // Set initial selected room if not set and rooms are available
