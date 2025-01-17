@@ -32,6 +32,7 @@ export interface Message {
   sender: {
     id: number;
     login: string;
+    name: string;  // Thêm trường name
   };
 }
 

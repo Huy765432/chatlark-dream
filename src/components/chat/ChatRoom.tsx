@@ -17,6 +17,7 @@ interface Message {
   id: string;
   content: string;
   sender: string;
+  sender_name: string;  // Thêm trường sender_name
   timestamp: string;
   avatar: string;
   isOwn?: boolean;
@@ -84,6 +85,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
     id: msg.id.toString(),
     content: msg.content,
     sender: msg.sender?.login || "",
+    sender_name: msg.sender?.name || msg.sender?.login || "",  // Sử dụng name hoặc fallback về login
     timestamp: new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     avatar: `https://api.dicebear.com/7.x/avatars/svg?seed=${msg.sender?.login || "anonymous"}`,
     isOwn: getStoredUser()?.id === msg.sender_id
@@ -165,7 +167,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
           <ChatMessage
             key={message.id}
             message={message.content}
-            sender={message.sender}
+            sender={message.sender_name}  // Sử dụng sender_name thay vì sender
             timestamp={message.timestamp}
             avatar={message.avatar}
             isOwn={message.isOwn}
