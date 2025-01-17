@@ -22,7 +22,7 @@ export interface PaginationResponse<T> {
 }
 
 export const fetchUsers = async (): Promise<PaginationResponse<User>> => {
-  const response = await fetch('http://0.0.0.0:5005/api/api/users?page=1&per_page=10');
+  const response = await fetch('http://127.0.0.1:5005/api/v1/users?page=1&per_page=10');
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
