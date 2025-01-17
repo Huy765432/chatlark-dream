@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,12 +30,22 @@ export default function ChatRoom({ room }: ChatRoomProps) {
   const [newMessage, setNewMessage] = useState("");
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const queryClient = useQueryClient();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const { data: messagesData, isLoading, error } = useQuery({
     queryKey: ['messages', room?.id],
     queryFn: () => room ? fetchMessages(parseInt(room.id)) : null,
     enabled: !!room,
   });
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messagesData]);
 
   useEffect(() => {
     if (!room) return;
@@ -58,6 +68,8 @@ export default function ChatRoom({ room }: ChatRoomProps) {
       // Invalidate and refetch messages query
       queryClient.invalidateQueries({ queryKey: ['messages', room.id] });
       toast.success("New message received!");
+      // Scroll to bottom when new message arrives
+      scrollToBottom();
     });
 
     // Handle status messages
@@ -110,6 +122,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
       );
 
       setNewMessage("");
+      scrollToBottom();
       
     } catch (error) {
       toast.error("Failed to send message");
@@ -158,6 +171,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
             isOwn={message.isOwn}
           />
         ))}
+        <div ref={messagesEndRef} />
       </div>
       <div className="p-4 border-t flex gap-2">
         <Input
