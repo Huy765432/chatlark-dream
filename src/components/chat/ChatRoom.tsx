@@ -174,7 +174,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-4 border-t backdrop-blur-sm bg-background/80 sticky bottom-0">
+      <div className="p-4 pb-8 md:pb-4 border-t backdrop-blur-sm bg-background/80 sticky bottom-0 safe-area-bottom">
         <div className="flex gap-2 max-w-3xl mx-auto">
           <Input
             ref={inputRef}
