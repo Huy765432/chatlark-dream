@@ -63,10 +63,21 @@ export default function ChatLayout() {
       {/* Telegram User Info */}
       {telegramUser && (
         <div className="p-4 bg-primary/10 border-b">
-          <p className="text-sm font-medium">
-            Welcome, {telegramUser.first_name} {telegramUser.last_name}
-            {telegramUser.username && ` (@${telegramUser.username})`}
-          </p>
+          <div className="flex justify-between items-center">
+            {isMobile && (
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setIsOpen(true)}
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            )}
+            <div className="text-sm font-medium ml-auto">
+              {telegramUser.first_name} {telegramUser.last_name}
+              {telegramUser.username && ` (@${telegramUser.username})`}
+            </div>
+          </div>
         </div>
       )}
       
@@ -74,15 +85,6 @@ export default function ChatLayout() {
         {isMobile ? (
           <div className="flex-1 relative">
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
-              <SheetTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="fixed top-4 left-4 z-50"
-                >
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
               <SheetContent side="left" className="p-0 w-[300px]">
                 <ChatList 
                   rooms={rooms}
