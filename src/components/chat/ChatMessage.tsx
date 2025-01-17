@@ -3,10 +3,7 @@ import { cn } from "@/lib/utils";
 
 interface ChatMessageProps {
   message: string;
-  sender: {
-    id: number;
-    login: string;
-  };
+  sender: string;
   timestamp: string;
   avatar: string;
   isOwn?: boolean;
@@ -26,14 +23,14 @@ export default function ChatMessage({
     )}>
       <Avatar className="w-8 h-8 transition-transform hover:scale-110">
         <AvatarImage src={avatar} />
-        <AvatarFallback>{sender.login[0]?.toUpperCase()}</AvatarFallback>
+        <AvatarFallback>{sender[0]?.toUpperCase()}</AvatarFallback>
       </Avatar>
       <div className={cn(
         "flex flex-col max-w-[80%]",
         isOwn && "items-end"
       )}>
         <div className="flex items-baseline gap-2 mb-1">
-          <span className="text-sm font-medium text-muted-foreground">{sender.login}</span>
+          <span className="text-sm font-medium text-muted-foreground">{sender}</span>
           <span className="text-xs text-muted-foreground/60">{timestamp}</span>
         </div>
         <div className={cn(
