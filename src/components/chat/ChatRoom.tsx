@@ -31,6 +31,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -123,6 +124,8 @@ export default function ChatRoom({ room }: ChatRoomProps) {
 
       setNewMessage("");
       scrollToBottom();
+      // Maintain focus on input after sending message
+      inputRef.current?.focus();
       
     } catch (error) {
       toast.error("Failed to send message");
@@ -175,6 +178,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
       </div>
       <div className="p-4 border-t flex gap-2">
         <Input
+          ref={inputRef}
           type="text"
           placeholder="Type a message..."
           className="flex-1"
