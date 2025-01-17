@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
 interface ChatMessageProps {
@@ -22,7 +22,6 @@ export default function ChatMessage({
       isOwn && "flex-row-reverse"
     )}>
       <Avatar className="w-8 h-8 transition-transform hover:scale-110">
-        <AvatarImage src={avatar} />
         <AvatarFallback>{sender[0]?.toUpperCase()}</AvatarFallback>
       </Avatar>
       <div className={cn(
