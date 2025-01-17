@@ -16,6 +16,7 @@ export interface ChatRoom {
   lastMessage: string;
   lastMessageTime: string;
   avatar: string;
+  member_count: number;
 }
 
 export default function ChatLayout() {
