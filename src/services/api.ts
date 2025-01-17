@@ -185,3 +185,20 @@ export const fetchRoomMembers = async (roomId: number): Promise<PaginationRespon
   }
   return response.json();
 };
+
+export const createChatRoom = async (name: string, type: 'public' | 'private'): Promise<ChatRoom> => {
+  const response = await fetch(`${API_HOST}/api/v1/chat-rooms`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true'
+    },
+    body: JSON.stringify({ name, type })
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to create chat room');
+  }
+  return response.json();
+};

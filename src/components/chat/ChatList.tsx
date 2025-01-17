@@ -2,6 +2,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChatRoom } from "./ChatLayout";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { useState } from "react";
+import CreateRoomDialog from "./CreateRoomDialog";
 
 interface ChatListProps {
   rooms: ChatRoom[];
@@ -11,10 +15,15 @@ interface ChatListProps {
 }
 
 export default function ChatList({ rooms, selectedRoom, onRoomSelect, isLoading }: ChatListProps) {
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+
   return (
     <div className="h-full flex flex-col">
-      <div className="p-4 border-b">
+      <div className="p-4 border-b flex justify-between items-center">
         <h2 className="font-semibold text-lg">Messages</h2>
+        <Button variant="ghost" size="icon" onClick={() => setCreateDialogOpen(true)}>
+          <Plus className="h-5 w-5" />
+        </Button>
       </div>
       <div className="flex-1 overflow-y-auto">
         {isLoading ? (
@@ -57,6 +66,7 @@ export default function ChatList({ rooms, selectedRoom, onRoomSelect, isLoading 
           ))
         )}
       </div>
+      <CreateRoomDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
     </div>
   );
 }
