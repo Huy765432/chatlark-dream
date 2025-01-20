@@ -36,29 +36,41 @@ export default function ChatRoom({ room }: ChatRoomProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Kiểm tra và yêu cầu quyền thông báo khi component mount
     if ("Notification" in window) {
       Notification.requestPermission().then(permission => {
         setNotificationPermission(permission);
+        
+        // Đăng ký nhận thông báo push nếu được cấp quyền
+        if (permission === "granted" && 'serviceWorker' in navigator) {
+          navigator.serviceWorker.ready.then(registration => {
+            registration.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: 'YOUR_PUBLIC_VAPID_KEY' // Thay thế bằng VAPID key của bạn
+            }).then(subscription => {
+              // Gửi subscription object lên server của bạn
+              console.log('Push Notification subscription:', subscription);
+            }).catch(err => {
+              console.log('Push subscription error: ', err);
+            });
+          });
+        }
       });
     }
   }, []);
 
   const showNotification = (message: Message) => {
     if (notificationPermission === "granted" && !document.hasFocus()) {
-      const notification = new Notification("Tin nhắn mới", {
-        body: `${message.sender_name}: ${message.content}`,
-        icon: message.avatar
-      });
-
-      // Tự động đóng thông báo sau 5 giây
-      setTimeout(() => notification.close(), 5000);
-
-      // Click vào thông báo sẽ focus vào cửa sổ chat
-      notification.onclick = () => {
-        window.focus();
-        notification.close();
-      };
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(registration => {
+          registration.showNotification(message.sender_name, {
+            body: message.content,
+            icon: message.avatar,
+            vibrate: [200, 100, 200],
+            tag: 'message',
+            renotify: true
+          });
+        });
+      }
     }
   };
 
@@ -71,10 +83,6 @@ export default function ChatRoom({ room }: ChatRoomProps) {
     queryFn: () => room ? fetchMessages(parseInt(room.id)) : null,
     enabled: !!room,
   });
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messagesData]);
 
   useEffect(() => {
     if (!room) return;
@@ -92,7 +100,6 @@ export default function ChatRoom({ room }: ChatRoomProps) {
     socket.on('new_message', (messageData) => {
       queryClient.invalidateQueries({ queryKey: ['messages', room.id] });
       
-      // Hiển thị thông báo desktop khi có tin nhắn mới
       const currentUser = getStoredUser();
       if (messageData.sender_id !== currentUser?.id) {
         const notificationMessage = {
