@@ -65,9 +65,12 @@ export default function ChatRoom({ room }: ChatRoomProps) {
           registration.showNotification(message.sender_name, {
             body: message.content,
             icon: message.avatar,
-            vibrate: [200, 100, 200],
             tag: 'message',
-            renotify: true
+            renotify: true,
+            data: {
+              timestamp: Date.now(),
+              message: message.content
+            }
           });
         });
       }
