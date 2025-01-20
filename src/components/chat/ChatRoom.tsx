@@ -66,7 +66,6 @@ export default function ChatRoom({ room }: ChatRoomProps) {
             body: message.content,
             icon: message.avatar,
             tag: 'message',
-            renotify: true,
             data: {
               timestamp: Date.now(),
               message: message.content
