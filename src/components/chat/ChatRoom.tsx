@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, UserPlus } from "lucide-react";
@@ -17,7 +17,7 @@ interface Message {
   id: string;
   content: string;
   sender: string;
-  sender_name: string;  // Thêm trường sender_name
+  sender_name: string;
   timestamp: string;
   avatar: string;
   isOwn?: boolean;
@@ -30,9 +30,37 @@ interface ChatRoomProps {
 export default function ChatRoom({ room }: ChatRoomProps) {
   const [newMessage, setNewMessage] = useState("");
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>("default");
   const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // Kiểm tra và yêu cầu quyền thông báo khi component mount
+    if ("Notification" in window) {
+      Notification.requestPermission().then(permission => {
+        setNotificationPermission(permission);
+      });
+    }
+  }, []);
+
+  const showNotification = (message: Message) => {
+    if (notificationPermission === "granted" && !document.hasFocus()) {
+      const notification = new Notification("Tin nhắn mới", {
+        body: `${message.sender_name}: ${message.content}`,
+        icon: message.avatar
+      });
+
+      // Tự động đóng thông báo sau 5 giây
+      setTimeout(() => notification.close(), 5000);
+
+      // Click vào thông báo sẽ focus vào cửa sổ chat
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+      };
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -63,7 +91,22 @@ export default function ChatRoom({ room }: ChatRoomProps) {
 
     socket.on('new_message', (messageData) => {
       queryClient.invalidateQueries({ queryKey: ['messages', room.id] });
-      toast.success("New message received!");
+      
+      // Hiển thị thông báo desktop khi có tin nhắn mới
+      const currentUser = getStoredUser();
+      if (messageData.sender_id !== currentUser?.id) {
+        const notificationMessage = {
+          id: messageData.id.toString(),
+          content: messageData.content,
+          sender_name: messageData.sender_name || messageData.sender?.login || "Unknown",
+          sender: messageData.sender?.login || "",
+          timestamp: new Date(messageData.created_at).toLocaleTimeString(),
+          avatar: `https://api.dicebear.com/7.x/avatars/svg?seed=${messageData.sender?.login || "anonymous"}`
+        };
+        showNotification(notificationMessage);
+      }
+      
+      toast.success("Có tin nhắn mới!");
       scrollToBottom();
     });
 
