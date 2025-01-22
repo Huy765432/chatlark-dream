@@ -1,4 +1,4 @@
-export const API_HOST = 'https://54ca-27-72-145-217.ngrok-free.app';
+export const API_HOST = 'https://8564-27-72-145-217.ngrok-free.app';
 
 export interface User {
   id: number;
