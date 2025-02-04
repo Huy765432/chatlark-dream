@@ -2,16 +2,23 @@ import { useState, useEffect, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, UserPlus } from "lucide-react";
+import { Send, UserPlus, Users } from "lucide-react";
 import type { ChatRoom as ChatRoomType } from "./ChatLayout";
 import ChatMessage from "./ChatMessage";
-import { createMessage, fetchMessages } from "@/services/api";
+import { createMessage, fetchMessages, fetchRoomMembers } from "@/services/api";
 import { getStoredUser } from "@/hooks/use-user";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { io } from "socket.io-client";
 import { API_HOST } from "@/services/api";
 import AddMemberDialog from "./AddMemberDialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 interface Message {
   id: string;
@@ -34,6 +41,13 @@ export default function ChatRoom({ room }: ChatRoomProps) {
   const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch room members
+  const { data: membersData } = useQuery({
+    queryKey: ['roomMembers', room?.id],
+    queryFn: () => room ? fetchRoomMembers(parseInt(room.id)) : null,
+    enabled: !!room,
+  });
 
   useEffect(() => {
     if ("Notification" in window) {
@@ -137,7 +151,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
     id: msg.id.toString(),
     content: msg.content,
     sender: msg.sender?.login || "",
-    sender_name: msg.sender_name || "",  // Sử dụng name hoặc fallback về login
+    sender_name: msg.sender_name || "",
     timestamp: new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     avatar: `https://api.dicebear.com/7.x/avatars/svg?seed=${msg.sender?.login || "anonymous"}`,
     isOwn: getStoredUser()?.id === msg.sender_id
@@ -212,6 +226,33 @@ export default function ChatRoom({ room }: ChatRoomProps) {
           </div>
           <UserPlus className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" />
         </button>
+
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Users className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Members ({membersData?.items.length || 0})</SheetTitle>
+            </SheetHeader>
+            <div className="mt-4 space-y-4">
+              {membersData?.items.map((member) => (
+                <div key={member.id} className="flex items-center gap-3">
+                  <Avatar>
+                    <AvatarImage src={`https://api.dicebear.com/7.x/avatars/svg?seed=${member.user.login}`} />
+                    <AvatarFallback>{member.user.login[0]}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">{member.user.login}</p>
+                    <p className="text-sm text-muted-foreground">{member.user.email}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -219,7 +260,7 @@ export default function ChatRoom({ room }: ChatRoomProps) {
           <ChatMessage
             key={message.id}
             message={message.content}
-            sender={message.sender_name}  // Sử dụng sender_name thay vì sender
+            sender={message.sender_name}
             timestamp={message.timestamp}
             avatar={message.avatar}
             isOwn={message.isOwn}
