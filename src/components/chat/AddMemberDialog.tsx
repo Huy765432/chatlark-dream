@@ -28,13 +28,15 @@ export default function AddMemberDialog({ open, onOpenChange, roomId }: AddMembe
   const { data: usersData, isLoading: isLoadingUsers } = useQuery({
     queryKey: ['users', searchTerm],
     queryFn: searchUsers,
-    enabled: open,
+    enabled: open && searchTerm.length > 0,
   });
 
   const { data: membersData, isLoading: isLoadingMembers } = useQuery({
     queryKey: ['roomMembers', roomId],
     queryFn: () => fetchRoomMembers(parseInt(roomId)),
     enabled: open,
+    staleTime: 30000, // Cache data for 30 seconds
+    cacheTime: 60000, // Keep data in cache for 1 minute
   });
 
   const handleAddMember = async (userId: number) => {
