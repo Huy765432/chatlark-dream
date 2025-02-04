@@ -50,7 +50,7 @@ export default function AddMemberDialog({ open, onOpenChange, roomId }: AddMembe
   };
 
   // Lọc danh sách người dùng chưa được thêm vào nhóm
-  const existingMemberIds = new Set(membersData?.items.map(member => member.user.id) || []);
+  const existingMemberIds = new Set(membersData?.items.map(member => member.id) || []);
 
   const filteredUsers = usersData?.items.filter(user => 
     !existingMemberIds.has(user.id) &&

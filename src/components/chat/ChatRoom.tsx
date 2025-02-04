@@ -255,18 +255,18 @@ export default function ChatRoom({ room }: ChatRoomProps) {
                     <div key={member.id} className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <Avatar>
-                          <AvatarImage src={`https://api.dicebear.com/7.x/avatars/svg?seed=${member.user.login}`} />
-                          <AvatarFallback>{member.user.login[0]}</AvatarFallback>
+                          <AvatarImage src={`https://api.dicebear.com/7.x/avatars/svg?seed=${member.login}`} />
+                          <AvatarFallback>{member.login[0]}</AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-medium">{member.user.login}</p>
-                          <p className="text-sm text-muted-foreground">{member.user.email}</p>
+                          <p className="font-medium">{member.login}</p>
+                          <p className="text-sm text-muted-foreground">{member.email}</p>
                         </div>
                       </div>
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleRemoveMember(member.user.id)}
+                        onClick={() => handleRemoveMember(member.id)}
                       >
                         <UserMinus className="h-4 w-4 text-destructive" />
                       </Button>
