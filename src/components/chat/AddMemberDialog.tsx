@@ -36,7 +36,7 @@ export default function AddMemberDialog({ open, onOpenChange, roomId }: AddMembe
     queryFn: () => fetchRoomMembers(parseInt(roomId)),
     enabled: open,
     staleTime: 30000, // Cache data for 30 seconds
-    cacheTime: 60000, // Keep data in cache for 1 minute
+    gcTime: 60000, // Keep data in cache for 1 minute (previously cacheTime)
   });
 
   const handleAddMember = async (userId: number) => {
