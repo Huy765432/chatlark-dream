@@ -56,6 +56,21 @@ export interface PaginationResponse<T> {
   pagination: PaginationInfo;
 }
 
+export const removeMemberFromRoom = async (roomId: number, userId: number): Promise<void> => {
+  const response = await fetch(`${API_HOST}/api/v1/chat-rooms/${roomId}/members?user_id=${userId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true'
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to remove member from room');
+  }
+};
+
 export const fetchUserByIdentity = async (identityVer: string): Promise<User> => {
   const response = await fetch(`${API_HOST}/api/v1/users/identity/${identityVer}`, {
     method: 'GET',

@@ -2,10 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, UserPlus, Users } from "lucide-react";
+import { Send, UserPlus, Users, UserMinus } from "lucide-react";
 import type { ChatRoom as ChatRoomType } from "./ChatLayout";
 import ChatMessage from "./ChatMessage";
-import { createMessage, fetchMessages, fetchRoomMembers } from "@/services/api";
+import { createMessage, fetchMessages, fetchRoomMembers, removeMemberFromRoom } from "@/services/api";
 import { getStoredUser } from "@/hooks/use-user";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -210,6 +210,17 @@ export default function ChatRoom({ room }: ChatRoomProps) {
     );
   }
 
+  const handleRemoveMember = async (userId: number) => {
+    try {
+      await removeMemberFromRoom(parseInt(room.id), userId);
+      queryClient.invalidateQueries({ queryKey: ['roomMembers', room?.id] });
+      queryClient.invalidateQueries({ queryKey: ['chatRooms'] });
+      toast.success("Member removed successfully");
+    } catch (error) {
+      toast.error("Failed to remove member");
+    }
+  };
+
   return (
     <div className="h-full flex flex-col bg-gradient-to-br from-background to-accent/10">
       <div className="p-4 border-b flex justify-between items-center backdrop-blur-sm bg-background/80 sticky top-0 z-10">
@@ -240,17 +251,25 @@ export default function ChatRoom({ room }: ChatRoomProps) {
             </SheetHeader>
             <div className="mt-4 space-y-4">
               {membersData?.items.map((member) => {
-                console.log("hhhhhhh", member);
                 return(
-                    <div key={member.id} className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src={`https://api.dicebear.com/7.x/avatars/svg?seed=${member.login}`} />
-                        <AvatarFallback>{member.login[0]}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">{member.login}</p>
-                        <p className="text-sm text-muted-foreground">{member.email}</p>
+                    <div key={member.id} className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Avatar>
+                          <AvatarImage src={`https://api.dicebear.com/7.x/avatars/svg?seed=${member.user.login}`} />
+                          <AvatarFallback>{member.user.login[0]}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">{member.user.login}</p>
+                          <p className="text-sm text-muted-foreground">{member.user.email}</p>
+                        </div>
                       </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleRemoveMember(member.user.id)}
+                      >
+                        <UserMinus className="h-4 w-4 text-destructive" />
+                      </Button>
                     </div>
                 )
               })}

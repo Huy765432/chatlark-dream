@@ -40,7 +40,6 @@ export default function AddMemberDialog({ open, onOpenChange, roomId }: AddMembe
   const handleAddMember = async (userId: number) => {
     try {
       await addMemberToRoom(parseInt(roomId), userId);
-      // Invalidate cả cache của danh sách phòng chat và thành viên
       await queryClient.invalidateQueries({ queryKey: ['chatRooms', telegramUser?.id] });
       await queryClient.invalidateQueries({ queryKey: ['roomMembers', roomId] });
       toast.success("Member added successfully!");
@@ -50,7 +49,8 @@ export default function AddMemberDialog({ open, onOpenChange, roomId }: AddMembe
     }
   };
 
-  const existingMemberIds = new Set(membersData?.items.map(member => member.user_id) || []);
+  // Lọc danh sách người dùng chưa được thêm vào nhóm
+  const existingMemberIds = new Set(membersData?.items.map(member => member.user.id) || []);
 
   const filteredUsers = usersData?.items.filter(user => 
     !existingMemberIds.has(user.id) &&
