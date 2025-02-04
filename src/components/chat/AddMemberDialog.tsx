@@ -8,10 +8,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { searchUsers, addMemberToRoom, fetchRoomMembers } from "@/services/api";
 import { toast } from "sonner";
 import { Loader2, Search, UserPlus } from "lucide-react";
+import { useTelegramUser } from "@/hooks/use-telegram-user";
 
 interface AddMemberDialogProps {
   open: boolean;
@@ -21,6 +22,8 @@ interface AddMemberDialogProps {
 
 export default function AddMemberDialog({ open, onOpenChange, roomId }: AddMemberDialogProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const queryClient = useQueryClient();
+  const telegramUser = useTelegramUser();
 
   const { data: usersData, isLoading: isLoadingUsers } = useQuery({
     queryKey: ['users', searchTerm],
@@ -37,6 +40,9 @@ export default function AddMemberDialog({ open, onOpenChange, roomId }: AddMembe
   const handleAddMember = async (userId: number) => {
     try {
       await addMemberToRoom(parseInt(roomId), userId);
+      // Invalidate cả cache của danh sách phòng chat và thành viên
+      await queryClient.invalidateQueries({ queryKey: ['chatRooms', telegramUser?.id] });
+      await queryClient.invalidateQueries({ queryKey: ['roomMembers', roomId] });
       toast.success("Member added successfully!");
       onOpenChange(false);
     } catch (error) {
@@ -47,7 +53,7 @@ export default function AddMemberDialog({ open, onOpenChange, roomId }: AddMembe
   const existingMemberIds = new Set(membersData?.items.map(member => member.user_id) || []);
 
   const filteredUsers = usersData?.items.filter(user => 
-    !existingMemberIds.has(user.id) && // Lọc bỏ những user đã có trong nhóm
+    !existingMemberIds.has(user.id) &&
     (user.login.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase()))
   ) || [];
