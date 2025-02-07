@@ -250,29 +250,31 @@ export default function ChatRoom({ room }: ChatRoomProps) {
               <SheetTitle>Members ({membersData?.items.length || 0})</SheetTitle>
             </SheetHeader>
             <div className="mt-4 space-y-4">
-              {membersData?.items.map((member) => {
-                return(
-                    <div key={member.id} className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Avatar>
-                          <AvatarImage src={`https://api.dicebear.com/7.x/avatars/svg?seed=${member.login}`} />
-                          <AvatarFallback>{member.login[0]}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium">{member.login}</p>
-                          <p className="text-sm text-muted-foreground">{member.email}</p>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleRemoveMember(member.id)}
-                      >
-                        <UserMinus className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
-                )
-              })}
+
+{membersData?.items.map((member) => {
+  return(
+    <div key={member.id} className="flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <Avatar>
+          <AvatarImage src={`https://api.dicebear.com/7.x/avatars/svg?seed=${member.user.login}`} />
+          <AvatarFallback>{member.user.login[0]}</AvatarFallback>
+        </Avatar>
+        <div>
+          <p className="font-medium">{member.user.login}</p>
+          <p className="text-sm text-muted-foreground">{member.user.email}</p>
+        </div>
+      </div>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => handleRemoveMember(member.user.id)}
+      >
+        <UserMinus className="h-4 w-4 text-destructive" />
+      </Button>
+    </div>
+  )
+})}
+
             </div>
           </SheetContent>
         </Sheet>
@@ -321,3 +323,4 @@ export default function ChatRoom({ room }: ChatRoomProps) {
     </div>
   );
 }
+
