@@ -1,4 +1,4 @@
-export const API_HOST = 'https://65aa-27-72-145-217.ngrok-free.app';
+export const API_HOST = 'https://15a5-27-72-145-217.ngrok-free.app';
 
 export interface User {
   id: number;
@@ -219,5 +219,4 @@ export const createChatRoom = async (name: string, type: 'public' | 'private', u
   }
   return response.json();
 };
-
 
